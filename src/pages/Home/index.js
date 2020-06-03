@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { addToCartRequest } from '../../store/modules/cart/ActionsCart';
 
 import {
   Container,
@@ -11,7 +12,6 @@ import {
   ProductButtonCounter,
   ProductButtonDescription,
 } from './styles';
-import Header from '../../components/Header';
 
 export default function Home({ navigation }) {
   const [list, setList] = useState([
@@ -59,7 +59,6 @@ export default function Home({ navigation }) {
     },
   ]);
 
-  console.tron.log(list);
   return (
     <Container>
       <ProductList
@@ -77,7 +76,7 @@ export default function Home({ navigation }) {
               {item.title}
             </ProductDescription>
             <ProductPrice>{item.price}</ProductPrice>
-            <ProductButton>
+            <ProductButton onPress={() => addToCartRequest(item.id)}>
               <ProductButtonCounter>2</ProductButtonCounter>
               <ProductButtonDescription>ADICIONAR</ProductButtonDescription>
             </ProductButton>
