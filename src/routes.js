@@ -1,15 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Home from './pages/Home';
 import Cart from './pages/Cart';
 import Header from './components/Header';
+import { navigationRef, isMountedRef } from './services/navigation';
 
 const Stack = createStackNavigator();
 
 export default function Routes() {
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <Stack.Navigator
         headerMode="float"
         screenOptions={{

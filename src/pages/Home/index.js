@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { addToCartRequest } from '../../store/modules/cart/ActionsCart';
 
 import {
@@ -12,52 +13,33 @@ import {
   ProductButtonCounter,
   ProductButtonDescription,
 } from './styles';
+import { formatPrice } from '../../util/format';
+import api from '../../services/api';
 
-export default function Home({ navigation }) {
-  const [list, setList] = useState([
-    {
-      id: 1,
-      title: 'Tênis de Caminhada Leve Confortável',
-      price: 179.9,
-      image:
-        'https://rocketseat-cdn.s3-sa-east-1.amazonaws.com/modulo-redux/tenis1.jpg',
-    },
-    {
-      id: 2,
-      title: 'Tênis VR Caminhada Confortável Detalhes Couro Masculino',
-      price: 139.9,
-      image:
-        'https://rocketseat-cdn.s3-sa-east-1.amazonaws.com/modulo-redux/tenis2.jpg',
-    },
-    {
-      id: 3,
-      title: 'Tênis Adidas Duramo Lite 2.0',
-      price: 219.9,
-      image:
-        'https://rocketseat-cdn.s3-sa-east-1.amazonaws.com/modulo-redux/tenis3.jpg',
-    },
-    {
-      id: 5,
-      title: 'Tênis VR Caminhada Confortável Detalhes Couro Masculino',
-      price: 139.9,
-      image:
-        'https://rocketseat-cdn.s3-sa-east-1.amazonaws.com/modulo-redux/tenis2.jpg',
-    },
-    {
-      id: 6,
-      title: 'Tênis Adidas Duramo Lite 2.0',
-      price: 219.9,
-      image:
-        'https://rocketseat-cdn.s3-sa-east-1.amazonaws.com/modulo-redux/tenis3.jpg',
-    },
-    {
-      id: 4,
-      title: 'Tênis de Caminhada Leve Confortável',
-      price: 179.9,
-      image:
-        'https://rocketseat-cdn.s3-sa-east-1.amazonaws.com/modulo-redux/tenis1.jpg',
-    },
-  ]);
+export default function Home() {
+  const dispatch = useDispatch();
+
+  const [list, setList] = useState([]);
+
+  useEffect(() => {
+    async function getProducts() {
+      const response = await api.get('products');
+      const dataFormatted = response.data.map((p) => ({
+        ...p,
+        formattedPrice: formatPrice(p.price),
+      }));
+
+      setList(dataFormatted);
+    }
+    getProducts();
+  }, []);
+
+  const amountItem = useSelector((state) =>
+    state.cart.reduce((a, p) => {
+      a[p.id] = p.amount;
+      return a;
+    }, {}),
+  );
 
   return (
     <Container>
@@ -75,9 +57,11 @@ export default function Home({ navigation }) {
             <ProductDescription numberOfLines={2} ellipsizeMode="tail">
               {item.title}
             </ProductDescription>
-            <ProductPrice>{item.price}</ProductPrice>
-            <ProductButton onPress={() => addToCartRequest(item.id)}>
-              <ProductButtonCounter>2</ProductButtonCounter>
+            <ProductPrice>{item.formattedPrice}</ProductPrice>
+            <ProductButton onPress={() => dispatch(addToCartRequest(item.id))}>
+              <ProductButtonCounter>
+                {amountItem[item.id] || 0}
+              </ProductButtonCounter>
               <ProductButtonDescription>ADICIONAR</ProductButtonDescription>
             </ProductButton>
           </ProductCard>

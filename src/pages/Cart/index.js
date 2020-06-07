@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
-import { SafeAreaView } from 'react-native';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { SafeAreaView } from 'react-native';
+import {
+  updateAmountRequest,
+  removeFromCart,
+} from '../../store/modules/cart/ActionsCart';
 import colors from '../../styles/colors';
-import Header from '../../components/Header';
+
 import {
   Container,
   Products,
@@ -26,27 +31,36 @@ import {
   EmptyText,
 } from './styles';
 
-export default function Cart({ navigation }) {
-  const [products, setList] = useState([
-    {
-      id: 1,
-      title: 'Tênis de Caminhada Leve Confortável',
-      price: 179.9,
-      image:
-        'https://rocketseat-cdn.s3-sa-east-1.amazonaws.com/modulo-redux/tenis1.jpg',
-    },
-  ]);
+import { formatPrice } from '../../util/format';
+
+export default function Cart() {
+  const dispatch = useDispatch();
+
+  const totalCart = useSelector((state) =>
+    formatPrice(
+      state.cart.reduce((t, p) => {
+        return t + p.price * p.amount;
+      }, 0),
+    ),
+  );
+
+  const products = useSelector((state) =>
+    state.cart.map((p) => ({
+      ...p,
+      productTotal: formatPrice(p.price * p.amount),
+    })),
+  );
+
   function decrement(product) {
-    // updateAmountRequest(product.id, product.amount - 1);
+    dispatch(updateAmountRequest(product.id, product.amount - 1));
   }
 
   function increment(product) {
-    // updateAmountRequest(product.id, product.amount + 1);
+    dispatch(updateAmountRequest(product.id, product.amount + 1));
   }
 
   return (
     <SafeAreaView style={{ backgroundColor: '#000', flex: 1 }}>
-      {/* <Header cart /> */}
       <Container>
         {products.length ? (
           <>
@@ -60,9 +74,13 @@ export default function Cart({ navigation }) {
                       <ProductImage source={{ uri: product.image }} />
                       <ProductDetails>
                         <ProductTitle>{product.title}</ProductTitle>
-                        <ProductPrice>{product.price}</ProductPrice>
+                        <ProductPrice>{product.formattedPrice}</ProductPrice>
                       </ProductDetails>
-                      <ProductDelete onPress={() => {}}>
+                      <ProductDelete
+                        onPress={() => {
+                          dispatch(removeFromCart(product.id));
+                        }}
+                      >
                         <Icon
                           name="delete-forever"
                           size={24}
@@ -78,7 +96,7 @@ export default function Cart({ navigation }) {
                           color={colors.primary}
                         />
                       </ProductControlButton>
-                      <ProductAmount>4</ProductAmount>
+                      <ProductAmount>{product.amount}</ProductAmount>
                       <ProductControlButton onPress={() => increment(product)}>
                         <Icon
                           name="add-circle-outline"
@@ -86,7 +104,7 @@ export default function Cart({ navigation }) {
                           color={colors.primary}
                         />
                       </ProductControlButton>
-                      <ProductSubtotal>R$581,43</ProductSubtotal>
+                      <ProductSubtotal>{product.productTotal}</ProductSubtotal>
                     </ProductControls>
                   </Product>
                 </>
@@ -94,7 +112,7 @@ export default function Cart({ navigation }) {
             />
             <TotalContainer>
               <TotalText>TOTAL</TotalText>
-              <TotalAmount>R$567,45</TotalAmount>
+              <TotalAmount>{totalCart}</TotalAmount>
               <Order>
                 <OrderText>FINALIZAR PEDIDO</OrderText>
               </Order>
@@ -110,40 +128,3 @@ export default function Cart({ navigation }) {
     </SafeAreaView>
   );
 }
-
-//   return (
-//     <Container>
-//       <Header navigation={navigation} cart />
-//       <Card>
-//         <CardView>
-//           <CardList
-//             data={list}
-//             keyExtractor={(p) => String(p.id)}
-//             renderItem={({ item }) => (
-//               <>
-//                 <CardItem>
-//                   <CardInfo>
-//                     <CardImage source={{ uri: item.image }} />
-//                     <CardText>
-//                       <CardTextDescription>{item.title}</CardTextDescription>
-//                       <CardTextPrice>{item.price}</CardTextPrice>
-//                     </CardText>
-//                   </CardInfo>
-//                 </CardItem>
-//                 <TotalItem>
-//                   <ItemQuantity>3</ItemQuantity>
-//                   <ItemTotal>R$560,70</ItemTotal>
-//                 </TotalItem>
-//               </>
-//             )}
-//           />
-//         </CardView>
-//         <FinishField>
-//           <TotaText>TOTAL</TotaText>
-//           <TotalValue>1642,10</TotalValue>
-//           <TotalButton title="FINALIZAR PEDIDO" />
-//         </FinishField>
-//       </Card>
-//     </Container>
-//   );
-// }

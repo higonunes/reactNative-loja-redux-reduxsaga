@@ -7,7 +7,7 @@ export const Container = styled.View`
   background: #fff;
   border-radius: 4px;
   margin: 15px;
-  max-height: 100%;
+  max-height: 95%;
 `;
 
 export const Products = styled.FlatList``;

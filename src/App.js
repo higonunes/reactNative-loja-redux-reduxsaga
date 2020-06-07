@@ -7,9 +7,11 @@ import store from './store';
 
 export default function App() {
   return (
-    <Provider store={store}>
+    <>
       <StatusBar backgroundColor="black" barStyle="light-content" />
-      <Routes />
-    </Provider>
+      <Provider store={store}>
+        <Routes />
+      </Provider>
+    </>
   );
 }

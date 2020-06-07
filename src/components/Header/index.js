@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import {
   Container,
   Logo,
@@ -18,6 +19,8 @@ export default function header({
   },
 }) {
   const disabled = name === 'Cart';
+
+  const cartSize = useSelector((state) => state.cart.length);
   function handleCart() {
     navigation.push('Cart');
   }
@@ -30,7 +33,7 @@ export default function header({
         onPress={disabled ? null : handleCart}
       >
         <Carrinho source={carrinhoImg} />
-        <Contador>0</Contador>
+        <Contador>{cartSize}</Contador>
       </CarrinhoContainer>
     </Container>
   );
