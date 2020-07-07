@@ -1,6 +1,6 @@
 # reactNative-loja-redux-reduxsaga
 
-Aplicação mobile da loja virtual afim de aprendizagem de utilização das tecnologiade estados globais e sideeffects do React, Redux e Redux-saga.
+Aplicação mobile da loja virtual afim de aprendizagem de utilização das tecnologiade estados globais e side effects do React, Redux e Redux-saga.
 
 # Tecnologias
 
